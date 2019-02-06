@@ -23,6 +23,9 @@ From the packages' descriptions:
 + `Shiny` is an R package that makes it easy to build interactive web apps straight from R;
 
 ```{r load libraries, warning=FALSE, message=FALSE}
+r = getOption("repos")
+r["CRAN"] = "http://cran.us.r-project.org"
+options(repos = r)
 
 library(tidyverse)
 library(tidytext)
@@ -32,6 +35,8 @@ library(wordcloud2)
 library(gridExtra)
 library(ngram)
 library(shiny) 
+library(igraph)
+library(ggraph)
 ```
 
 ### Step 1 - Load the processed text data along with demographic information on contributors
@@ -61,11 +66,15 @@ hm_data <- hm_data %>%
          age, 
          country, 
          ground_truth_category, 
+         predicted_category,
          text) %>%
   mutate(count = sapply(hm_data$text, wordcount)) %>%
   filter(gender %in% c("m", "f")) %>%
+  mutate(gender = fct_recode(gender, male = "m", female = "f")) %>%
   filter(marital %in% c("single", "married")) %>%
   filter(parenthood %in% c("n", "y")) %>%
+  mutate(parenthood = fct_recode(parenthood, no_child = "n", have_child = "y")) %>%
+  filter(country %in% c("USA", "IND")) %>%
   filter(reflection_period %in% c("24h", "3m")) %>%
   mutate(reflection_period = fct_recode(reflection_period, 
                                         months_3 = "3m", hours_24 = "24h"))
@@ -157,7 +166,8 @@ ui <- navbarPage("What makes people happy?",
                                           choices = c("Gender" = "gender",
                                                       "Marital Status" = "marital",
                                                       "Parenthood" = "parenthood",
-                                                      "Reflection Period" = "reflection_period")
+                                                      "Reflection Period" = "reflection_period",
+                                                      "Country" = "country")
                               )
                             ),
                             
@@ -179,7 +189,8 @@ ui <- navbarPage("What makes people happy?",
                                           choices = c("Gender" = "gender",
                                                       "Marital Status" = "marital",
                                                       "Parenthood" = "parenthood",
-                                                      "Reflection Period" = "reflection_period")
+                                                      "Reflection Period" = "reflection_period",
+                                                      "Country" = "country")
                               ),
                               numericInput(inputId = "topBigrams",
                                           label = "Number of top pairs to view:",

@@ -24,6 +24,13 @@ From the packages' descriptions:
 + `DT` provides an R interface to the JavaScript library DataTables.
 
 ```{r load libraries, warning=FALSE, message=FALSE}
+r = getOption("repos")
+r["CRAN"] = "http://cran.us.r-project.org"
+options(repos = r)
+install.packages('tm')
+install.packages('tidytext')
+install.packages('tidyverse')
+install.packages('DT')
 library(tm)
 library(tidytext)
 library(tidyverse)
