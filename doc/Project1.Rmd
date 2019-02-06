@@ -18,6 +18,7 @@ library(tidytext)
 library(tidyverse)
 library(DT)
 library(ngram)
+library(shiny)
 library(topicmodels)
 library(LDAvis)
 library(servr)
@@ -52,10 +53,6 @@ We can see that Americans tend to enjoy "gym", "boyfriend", "dog", "concert", et
 
 In this part, since each description of happy moments has a predicted category (affection, achievement, etc.), I tried to analyze how different factors affact the categories of those happy moments.
 
-![](../figs/category_count)
-
-We can see from the above chart that affection and achievement are two main categories of happy moments. Further, there are some comparisons between different individual groups.
-
 Male vs. Female
 ![](../figs/category_gender_scatter.png) 
 Single vs. Married
@@ -67,7 +64,7 @@ USA vs. IND
 3-months vs. 24-hours
 ![](../figs/category_period_scatter.png)
 
-We can see that males prefer exercise while females prefer affection and nature, married individuals and individuals with children prefer affection, bonding and achievement can produce more long-time happiness as shown in the reflection period of 3 months, and Indians enjoy bonding more than Americans.
+We can see from the above charts that affection and achievement are two main categories of happy moments, and that males prefer exercise while females prefer affection and nature, married individuals and individuals with children prefer affection, bonding and achievement can produce more long-time happiness as shown in the reflection period of 3 months, and Indians enjoy bonding more than Americans
 
 ### What are the keywords for happy moments?
 
@@ -86,7 +83,7 @@ hm_data <- read_csv("../output/processed_moments.csv")
 hm_data <- hm_data[0:10000,]
 ```
 
-```{r, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
 # Aggregate
 hm_byusers <- aggregate(x = hm_data$cleaned_hm, by = list(hm_data$wid), paste, collapse=". ")
 colnames(hm_byusers) <- c("wid", "cleaned_hm")
@@ -107,7 +104,7 @@ corpus <- tm_map(corpus, stripWhitespace)
 dtm <- DocumentTermMatrix(corpus)
 ```
 
-```{r, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
 # Topic Modeling
 burnin <- 4000
 iter <- 2000
