@@ -2,6 +2,7 @@
 title: "The Ways to Happiness"
 output:
   html_document: default
+runtime: shiny
 ---
 
 
@@ -116,6 +117,9 @@ best <- TRUE
 k <- 10 #find 10 topics
 
 ldaOut <-LDA(dtm, k, method="Gibbs", control=list(nstart=nstart, seed = seed, best=best, burnin = burnin, iter = iter, thin=thin))
+
+ldaOut.terms <- as.matrix(terms(ldaOut,6))
+datatable(ldaOut.terms)
 
 topicmodels2LDAvis <- function(x, ...){
   post <- topicmodels::posterior(x)
